@@ -54,3 +54,15 @@ posetsDeepening soFar elementSet =
     if next == []
     then soFar
     else soFar <> posetsDeepening next elementSet
+
+bottomRow :: [(Element, Element)] -> [Element] -> [Element]
+bottomRow poset elementSet = filter (\x -> not $ elem x (fst <$> poset)) elementSet
+
+nextRow :: [(Element, Element)] -> [Element] -> [Element]
+nextRow poset previousRow = nub $ fst <$> filter (\x -> elem (snd x) previousRow) poset
+
+rows :: [(Element, Element)] -> [Element] -> [[Element]]
+rows poset elementSet = generateUntilNull (nextRow poset) (bottomRow poset elementSet)
+
+generateUntilNull :: ([a] -> [a]) -> [a] -> [[a]]
+generateUntilNull f x = if null x then [] else x : (generateUntilNull f (f x))
