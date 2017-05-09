@@ -50,10 +50,7 @@ allPosets = posetsDeepening [[]]
 
 posetsDeepening :: [[(Element, Element)]] -> [Element] -> [[(Element, Element)]]
 posetsDeepening soFar elementSet =
-  let next = pruneIsomorphisms elementSet $ foldMap (addEdge elementSet) soFar in
-    if next == []
-    then soFar
-    else soFar <> posetsDeepening next elementSet
+  concat $ generateUntilNull (\x -> pruneIsomorphisms elementSet $ foldMap (addEdge elementSet) x) [[]]
 
 bottomRow :: [(Element, Element)] -> [Element] -> [Element]
 bottomRow poset elementSet = filter (\x -> not $ elem x (fst <$> poset)) elementSet
