@@ -1,11 +1,13 @@
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TupleSections     #-}
+
+import           Protolude hiding (head)
 
 import           Control.Applicative
 import           Data.Foldable
-import           Data.Graph hiding (Edge)
+import           Data.Graph              hiding (Edge)
 import           Data.Graph.Automorphism
-import           Data.List
-import           Data.Monoid
+import           Data.List               (head, last, nub, nubBy)
 
 type Element = Int
 
@@ -54,3 +56,17 @@ posetsDeepening soFar elementSet =
 
 generateUntilNull :: ([a] -> [a]) -> [a] -> [[a]]
 generateUntilNull f = takeWhile (not . null) . iterate f
+
+height :: [(Element, Element)] -> Int
+height = length . longestChain
+
+longestChain :: [(Element, Element)] -> [(Element, Element)]
+longestChain poset = fromMaybe [] (headMay =<< lastMay chainSearch)
+  where chainSearch = takeWhile (not . null) $ iterate (lengthenChains poset) [[edge] | edge <- poset]
+
+lengthenChains :: [(Element, Element)] -> [[(Element, Element)]] -> [[(Element, Element)]]
+lengthenChains poset chains = foldMap lengthenChain chains
+  where lengthenChain chain =
+          case headMay chain of
+            Nothing -> [[edge] | edge <- poset]
+            Just (end, _) -> [next:chain | next <- poset, snd next == end]
