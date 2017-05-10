@@ -1,15 +1,15 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TupleSections     #-}
 
-import           Protolude hiding (head)
+import           Protolude               hiding (head)
 
 import           Control.Applicative
+import           Data.Bifunctor
 import           Data.Foldable
 import           Data.Graph              hiding (Edge)
 import           Data.Graph.Automorphism
-import Data.Bifunctor
-import Math.Core.Utils (picks)
 import           Data.List               (head, last, nub, nubBy)
+import           Math.Core.Utils         (picks)
 
 type Element = Int
 
@@ -28,10 +28,7 @@ connectElement poset elementSet element = (:poset) <$> allowedEdges
         isIdentity (x, y) = x == y
         isTransitive e = hasTransitive (e : poset)
         isContradiction e = hasContradiction (e : poset)
-        isAllowed = (not <$>
-                          isIdentity
-                     <||> isTransitive
-                     <||> isContradiction)
+        isAllowed = (not <$> isIdentity <||> isTransitive <||> isContradiction)
         allowedEdges = filter isAllowed edges
         (<||>) = liftA2 (||)
 
