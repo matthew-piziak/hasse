@@ -7,9 +7,13 @@ import           Control.Applicative
 import           Data.Foldable
 import           Data.Graph              hiding (Edge)
 import           Data.Graph.Automorphism
+import Data.Bifunctor
+import Math.Core.Utils (picks)
 import           Data.List               (head, last, nub, nubBy)
 
 type Element = Int
+
+main = undefined
 
 transitiveClosure :: [(Element, Element)] -> [(Element, Element)]
 transitiveClosure poset
@@ -22,18 +26,20 @@ connectElement poset elementSet element = (:poset) <$> allowedEdges
   where edges = ((element,) <$> elementSet) <> ((,element) <$> elementSet)
         tc = transitiveClosure poset
         isIdentity (x, y) = x == y
-        isContradiction (x, y) = elem (y, x) tc
-        isTransitive e = elem e tc
-        isOvercoveringUp e = elem e $ fold [[(c, b), (b, c)] | (a, b) <- tc, (a', c) <- tc, a == a']
-        isOvercoveringDn e = elem e $ fold [[(c, b), (b, c)] | (b, a) <- tc, (c, a') <- tc, a == a']
+        isTransitive e = hasTransitive (e : poset)
+        isContradiction e = hasContradiction (e : poset)
         isAllowed = (not <$>
                           isIdentity
-                     <||> isContradiction
                      <||> isTransitive
-                     <||> isOvercoveringUp
-                     <||> isOvercoveringDn)
+                     <||> isContradiction)
         allowedEdges = filter isAllowed edges
         (<||>) = liftA2 (||)
+
+hasTransitive :: [(Element, Element)]-> Bool
+hasTransitive xs = or $ [elem edge (transitiveClosure rest) | (edge, rest) <- picks xs]
+
+hasContradiction :: [(Element, Element)]-> Bool
+hasContradiction xs = or $ [elem (swap edge) (transitiveClosure rest) | (edge, rest) <- picks xs]
 
 addEdge :: [Element] -> [(Element, Element)] -> [[(Element, Element)]]
 addEdge elementSet poset = foldMap (connectElement poset elementSet) elementSet
