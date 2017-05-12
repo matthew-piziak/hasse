@@ -35,10 +35,10 @@ connectElement poset elementSet element = (:poset) <$> allowedEdges
         (<||>) = liftA2 (||)
 
 hasTransitive :: [(Element, Element)]-> Bool
-hasTransitive xs = or  [elem edge (transitiveClosure rest) | (edge, rest) <- picks xs]
+hasTransitive xs = or [edge `elem` transitiveClosure rest | (edge, rest) <- picks xs]
 
 hasContradiction :: [(Element, Element)]-> Bool
-hasContradiction xs = or $ [elem (swap edge) (transitiveClosure rest) | (edge, rest) <- picks xs]
+hasContradiction xs = or [swap edge `elem` transitiveClosure rest | (edge, rest) <- picks xs]
 
 addEdge :: [Element] -> [(Element, Element)] -> [[(Element, Element)]]
 addEdge elementSet poset = foldMap (connectElement poset elementSet) elementSet
