@@ -30,12 +30,12 @@ connectElement poset elementSet element = (:poset) <$> allowedEdges
         isIdentity (x, y) = x == y
         isTransitive e = hasTransitive (e : poset)
         isContradiction e = hasContradiction (e : poset)
-        isAllowed = (not <$> isIdentity <||> isTransitive <||> isContradiction)
+        isAllowed = not <$> isIdentity <||> isTransitive <||> isContradiction
         allowedEdges = filter isAllowed edges
         (<||>) = liftA2 (||)
 
 hasTransitive :: [(Element, Element)]-> Bool
-hasTransitive xs = or $ [elem edge (transitiveClosure rest) | (edge, rest) <- picks xs]
+hasTransitive xs = or  [elem edge (transitiveClosure rest) | (edge, rest) <- picks xs]
 
 hasContradiction :: [(Element, Element)]-> Bool
 hasContradiction xs = or $ [elem (swap edge) (transitiveClosure rest) | (edge, rest) <- picks xs]
@@ -57,7 +57,7 @@ allPosets = posetsDeepening [[]]
 
 posetsDeepening :: [[(Element, Element)]] -> [Element] -> [[(Element, Element)]]
 posetsDeepening soFar elementSet =
-  concat $ generateUntilNull (\x -> pruneIsomorphisms elementSet $ foldMap (addEdge elementSet) x) [[]]
+  concat $ generateUntilNull (pruneIsomorphisms elementSet . foldMap (addEdge elementSet)) [[]]
 
 generateUntilNull :: ([a] -> [a]) -> [a] -> [[a]]
 generateUntilNull f = takeWhile (not . null) . iterate f
@@ -70,7 +70,7 @@ longestChain poset = fromMaybe [] (headMay =<< lastMay chainSearch)
   where chainSearch = takeWhile (not . null) $ iterate (lengthenChains poset) [[edge] | edge <- poset]
 
 lengthenChains :: [(Element, Element)] -> [[(Element, Element)]] -> [[(Element, Element)]]
-lengthenChains poset chains = foldMap lengthenChain chains
+lengthenChains poset = foldMap lengthenChain
   where lengthenChain chain =
           case headMay chain of
             Nothing       -> [[edge] | edge <- poset]
