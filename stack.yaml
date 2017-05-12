@@ -1,0 +1,11 @@
+flags: {}
+extra-package-dbs: []
+packages:
+- '.'
+extra-deps:
+- HaskellForMaths-0.4.8
+- enumerable-0.0.3
+- hgal-2.0.0.2
+resolver: lts-8.12
+# ghc-options:
+#   "*": -Wall
