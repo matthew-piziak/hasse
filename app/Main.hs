@@ -1,6 +1,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TupleSections     #-}
 
+module Main where
+
 import           Protolude               hiding (head)
 
 import           Control.Applicative
@@ -71,5 +73,5 @@ lengthenChains :: [(Element, Element)] -> [[(Element, Element)]] -> [[(Element, 
 lengthenChains poset chains = foldMap lengthenChain chains
   where lengthenChain chain =
           case headMay chain of
-            Nothing -> [[edge] | edge <- poset]
+            Nothing       -> [[edge] | edge <- poset]
             Just (end, _) -> [next:chain | next <- poset, snd next == end]
