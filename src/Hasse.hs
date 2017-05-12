@@ -62,6 +62,15 @@ posetsDeepening soFar elementSet =
 generateUntilNull :: ([a] -> [a]) -> [a] -> [[a]]
 generateUntilNull f = takeWhile (not . null) . iterate f
 
+rowOfElement :: [(Element, Element)] -> Element -> Int
+rowOfElement poset element =
+  case lookupAll element poset of
+    []    -> 0
+    nexts -> 1 + maximum [rowOfElement poset next | next <- nexts]
+
+lookupAll :: Eq a => a -> [(a, a)] -> [a]
+lookupAll e assl = [y | (x, y) <- assl, x == e]
+
 height :: [(Element, Element)] -> Int
 height = length . longestChain
 
