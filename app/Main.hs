@@ -22,7 +22,7 @@ node n
   = circle 1
     # fc black
     # named n
-    # pad 1.5
+    # pad 2
 
 row :: [Element] -> Diagram B
 row elements = (hcat $ node <$> elements) # centerX
@@ -37,8 +37,8 @@ diagram elementSet poset = (vcat $ (fmap row rows')) # connections # rotateBy (1
         connection (to, from) = connect' (with & arrowHead .~ noHead) to from
 
 it :: Diagram B
-it = head $ hcat <$> (chunksOf 7) $ diagram elements <$> (allPosets elements)
-  where elements = [1, 2, 3, 4]
+it = vcat $ hcat <$> chunksOf 7 (diagram elements <$> (allPosets elements))
+  where elements = [1, 2, 3, 4, 5]
 
 main :: IO ()
 main = mainWith $ it
