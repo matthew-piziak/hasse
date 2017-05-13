@@ -3,3 +3,5 @@
 /app/Main
 *.hi
 *.o
+/app/circle.svg
+/LICENSE
