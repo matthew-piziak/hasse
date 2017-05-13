@@ -5,3 +5,5 @@ packages:
 extra-deps:
 - HaskellForMaths-0.4.8
 resolver: lts-8.13
+ghc-options:
+  "*": -Wall

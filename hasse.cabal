@@ -11,9 +11,6 @@ library
   hs-source-dirs:      src
   exposed-modules:     Hasse
   build-depends:       base >= 4.7 && < 5
-                     , colour
-                     , diagrams-lib
-                     , diagrams-svg
                      , lattices
                      , protolude
                      , multiset
@@ -21,6 +18,17 @@ library
                      , hgal
                      , HaskellForMaths
   default-language:    Haskell2010
+
+executable hasse-exe
+  hs-source-dirs: app
+  main-is: Main.hs
+  build-depends: base
+               , hasse
+               , colour
+               , diagrams-lib
+               , diagrams-svg
+               , split
+  default-language: Haskell2010
 
 test-suite hasse-test
   type:                exitcode-stdio-1.0

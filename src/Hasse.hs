@@ -5,17 +5,12 @@ module Hasse where
 
 import           Protolude               hiding (head)
 
-import           Control.Applicative
-import           Data.Bifunctor
-import           Data.Foldable
-import           Data.Graph              hiding (Edge)
+import           Data.Graph              hiding (Edge, edges)
 import           Data.Graph.Automorphism
 import           Data.List               (head, last, nub, nubBy)
 import           Math.Core.Utils         (picks)
 
 type Element = Int
-
-main = undefined
 
 transitiveClosure :: [(Element, Element)] -> [(Element, Element)]
 transitiveClosure poset
@@ -26,7 +21,6 @@ transitiveClosure poset
 connectElement :: [(Element, Element)] -> [Element] -> Element -> [[(Element, Element)]]
 connectElement poset elementSet element = (:poset) <$> allowedEdges
   where edges = ((element,) <$> elementSet) <> ((,element) <$> elementSet)
-        tc = transitiveClosure poset
         isIdentity (x, y) = x == y
         isTransitive e = hasTransitive (e : poset)
         isContradiction e = hasContradiction (e : poset)
@@ -53,14 +47,13 @@ isIsomorphic' elementSet poset poset' = isIsomorphic graph graph'
         graph' = buildG bounds poset'
 
 allPosets :: [Element] -> [[(Element, Element)]]
-allPosets = posetsDeepening [[]]
-
-posetsDeepening :: [[(Element, Element)]] -> [Element] -> [[(Element, Element)]]
-posetsDeepening soFar elementSet =
-  concat $ generateUntilNull (pruneIsomorphisms elementSet . foldMap (addEdge elementSet)) [[]]
+allPosets elementSet = concat $ generateUntilNull (pruneIsomorphisms elementSet . foldMap (addEdge elementSet)) [[]]
 
 generateUntilNull :: ([a] -> [a]) -> [a] -> [[a]]
 generateUntilNull f = takeWhile (not . null) . iterate f
+
+rows :: [(Element, Element)] -> [Element] -> [[Element]]
+rows poset elementSet = (\x -> filter (\y -> rowOfElement poset y == x) elementSet) <$> [0..height poset]
 
 rowOfElement :: [(Element, Element)] -> Element -> Int
 rowOfElement poset element =

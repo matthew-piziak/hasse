@@ -4,15 +4,41 @@
 
 module Main where
 
-import Diagrams.Prelude
+import Diagrams.Prelude hiding (elements, width, to, from)
 import Diagrams.Backend.SVG.CmdLine
 
-import Hasse (allPosets)
+import Protolude (fold)
 
-node :: Int -> V2 n -> Diagram B
-node n pos = circle 1
-             # fc black
-             # named n
-             # pad 2
+import Data.List.Split
 
-main = mainWith $ node 0 0
+import Hasse (
+  Element
+  , allPosets
+  , rows
+  )
+
+node :: Int -> Diagram B
+node n
+  = circle 1
+    # fc black
+    # named n
+    # pad 1.5
+
+row :: [Element] -> Diagram B
+row elements = (hcat $ node <$> elements) # centerX
+
+diagram :: [Element] -> [(Element, Element)] -> Diagram B
+diagram elementSet poset = (vcat $ (fmap row rows')) # connections # rotateBy (1/2)
+  where rows' = rows poset elementSet
+        connections =
+          case length poset of
+            0 -> id
+            _ -> fold $ connection <$> poset
+        connection (to, from) = connect' (with & arrowHead .~ noHead) to from
+
+it :: Diagram B
+it = head $ hcat <$> (chunksOf 7) $ diagram elements <$> (allPosets elements)
+  where elements = [1, 2, 3, 4]
+
+main :: IO ()
+main = mainWith $ it
