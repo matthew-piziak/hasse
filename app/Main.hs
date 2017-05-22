@@ -1,21 +1,17 @@
-{-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE TypeFamilies              #-}
 
 module Main where
 
-import Diagrams.Prelude hiding (elements, width, to, from)
-import Diagrams.Backend.SVG.CmdLine
+import           Diagrams.Backend.SVG.CmdLine
+import           Diagrams.Prelude             hiding (elements, from, to, width)
 
-import Protolude (fold)
+import           Protolude                    (fold)
 
-import Data.List.Split
+import           Data.List.Split
 
-import Hasse (
-  Element
-  , allPosets
-  , rows
-  )
+import           Hasse                        (Element, allPosets, rows)
 
 node :: Int -> Diagram B
 node n
@@ -26,10 +22,10 @@ node n
     # padX 1.5
 
 row :: [Element] -> Diagram B
-row elements = (hcat $ node <$> elements) # centerX
+row elements = hcat (node <$> elements) # centerX
 
 diagram :: [Element] -> [(Element, Element)] -> Diagram B
-diagram elementSet poset = (vcat $ (fmap row rows')) # connections # reflectY # padX 1.2
+diagram elementSet poset = vcat (fmap row rows') # connections # reflectY # padX 1.2
   where rows' = rows poset elementSet
         connections =
           case length poset of
@@ -38,8 +34,8 @@ diagram elementSet poset = (vcat $ (fmap row rows')) # connections # reflectY # 
         connection (to, from) = connect' (with & arrowHead .~ noHead & shaftStyle %~ lw 1) to from
 
 it :: Diagram B
-it = vcat $ (padY 1.2) . hcat <$> chunksOf 46 (diagram elements <$> (allPosets elements))
+it = vcat $ padY 1.2 . hcat <$> chunksOf 46 (diagram elements <$> allPosets elements)
   where elements = [1, 2, 3, 4, 5, 6, 7]
 
 main :: IO ()
-main = mainWith $ it
+main = mainWith it
