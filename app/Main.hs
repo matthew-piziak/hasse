@@ -6,10 +6,9 @@ module Main where
 
 import           Diagrams.Backend.SVG.CmdLine
 import           Diagrams.Prelude             hiding (elements, from, to, width)
+import           Diagrams.TwoD.Layout.Grid
 
-import           Protolude                    (fold)
-
-import           Data.List.Split
+import           Data.Foldable
 
 import           Hasse                        (Element, allPosets, rows)
 
@@ -34,8 +33,8 @@ diagram elementSet poset = vcat (fmap row rows') # connections # reflectY # padX
         connection (to, from) = connect' (with & arrowHead .~ noHead & shaftStyle %~ lw 1) to from
 
 it :: Diagram B
-it = vcat $ padY 1.2 . hcat <$> chunksOf 46 (diagram elements <$> allPosets elements)
-  where elements = [1, 2, 3, 4, 5, 6, 7]
+it = gridCat (diagram elements <$> allPosets elements)
+  where elements = [1, 2, 3, 4, 5]
 
 main :: IO ()
 main = mainWith it
